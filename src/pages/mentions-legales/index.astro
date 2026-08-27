@@ -1,0 +1,71 @@
+---
+// Mentions légales — page standard (indexable)
+import Base from '../../layouts/Base.astro';
+
+const TITLE = 'Mentions légales — PDC VD';
+const DESC = "Mentions légales du site PDC VD : éditeur, hébergement, propriété intellectuelle et responsabilité.";
+const CANONICAL = 'https://pdc-vd.ch/mentions-legales/';
+---
+<Base title={TITLE} description={DESC} canonical={CANONICAL}>
+  <main class="container">
+    <article class="legal-page" aria-labelledby="titre">
+      <h1 id="titre">Mentions légales</h1>
+
+      <h2>Éditeur du site</h2>
+      <p>
+        Le site <strong>PDC VD</strong> est un magazine en ligne consacré à l'actualité en tout
+        genre&nbsp;: conseils pratiques, décryptages et articles de fond, ainsi que des publications
+        sponsorisées.
+      </p>
+      <p>
+        Éditeur&nbsp;: <strong>PDC VD</strong><br />
+        Responsable de la publication&nbsp;: PDC VD
+      </p>
+
+      <h2>Hébergement</h2>
+      <p>
+        Le site est hébergé par Cloudflare, Inc. (101 Townsend Street, San Francisco, CA 94107, États-Unis),
+        via son offre Cloudflare Pages.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Pour toute question relative au site ou à vos commandes, vous pouvez nous contacter depuis la
+        page <a href="/contact/">Contact</a>. Nous répondons sous 24 à 48&nbsp;heures ouvrées.
+      </p>
+
+      <h2>Propriété intellectuelle</h2>
+      <p>
+        L'ensemble des contenus publiés sur ce site (textes, images, logos, structure éditoriale) est protégé
+        par le droit d'auteur et reste la propriété de leurs auteurs respectifs. Toute reproduction,
+        représentation ou diffusion, totale ou partielle, sans autorisation préalable est interdite.
+      </p>
+      <p>
+        Les contenus sponsorisés sont identifiés comme tels et demeurent sous la responsabilité de leur
+        annonceur quant aux informations qu'ils contiennent.
+      </p>
+
+      <h2>Responsabilité</h2>
+      <p>
+        Le site s'efforce d'assurer l'exactitude des informations publiées, sans garantie expresse ou
+        implicite. L'éditeur ne saurait être tenu responsable des erreurs, omissions ou conséquences liées à
+        l'utilisation des informations diffusées. Les liens externes vers des tiers ne relèvent pas de la
+        responsabilité de l'éditeur.
+      </p>
+
+      <h2>Droit applicable</h2>
+      <p>
+        Le présent site et ses conditions d'utilisation sont régis par le droit suisse, en particulier pour
+        les litiges liés aux commandes et aux paiements.
+      </p>
+    </article>
+  </main>
+</Base>
+
+<style>
+  .legal-page { max-width: 820px; margin: 24px auto 64px; }
+  .legal-page h1 { font-size: 30px; margin: 0 0 18px; }
+  .legal-page h2 { font-size: 19px; margin: 26px 0 10px; }
+  .legal-page p { font-size: 15px; line-height: 1.7; color: #333; margin: 0 0 12px; }
+  .legal-page a { color: var(--accent); font-weight: 600; }
+</style>

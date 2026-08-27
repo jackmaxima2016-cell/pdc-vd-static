@@ -1,0 +1,87 @@
+---
+// Conditions générales de vente — page standard (indexable)
+import Base from '../../layouts/Base.astro';
+
+const TITLE = 'Conditions générales de vente — PDC VD';
+const DESC = "Conditions générales de vente des publications sponsorisées PDC VD : packs, tarifs, délais, paiement, annulation.";
+const CANONICAL = 'https://pdc-vd.ch/cgv/';
+---
+<Base title={TITLE} description={DESC} canonical={CANONICAL}>
+  <main class="container">
+    <article class="legal-page" aria-labelledby="titre">
+      <h1 id="titre">Conditions générales de vente</h1>
+
+      <h2>1. Objet</h2>
+      <p>
+        Les présentes conditions générales de vente (CGV) régissent la vente de publications sponsorisées sur
+        le site <strong>PDC VD</strong>. Toute commande implique l'acceptation sans réserve des présentes
+        conditions.
+      </p>
+
+      <h2>2. Prestation</h2>
+      <p>
+        La publication sponsorisée consiste en la rédaction et la mise en ligne d'un article dans la rubrique
+        choisie du site, incluant un lien vers le site du client (lien dit «&nbsp;dofollow&nbsp;»), pour une
+        durée de mise en ligne correspondant au pack choisi (Essentiel, Standard, Premium ou Impact).
+      </p>
+
+      <h2>3. Packs et tarifs</h2>
+      <p>
+        Les prix sont exprimés en francs suisses (CHF), hors TVA, et peuvent également être réglés en euros au
+        taux du jour. Les packs et options en vigueur sont affichés sur la page de commande. Le total estimé
+        est recalculé en temps réel selon les options sélectionnées. Les offres promotionnelles (ex.&nbsp;−
+        40&nbsp;%) sont valables pendant la période indiquée sur le site.
+      </p>
+
+      <h2>4. Commande et paiement</h2>
+      <p>
+        La commande est confirmée après validation du formulaire et paiement en ligne par carte bancaire via
+        Stripe. Un reçu électronique est adressé par e-mail. Le calendrier de publication et l'angle éditorial
+        sont validés avec le client sous 24 à 48&nbsp;heures ouvrées après la commande.
+      </p>
+
+      <h2>5. Délais de publication</h2>
+      <p>
+        Les délais de rédaction et de mise en ligne dépendent du pack choisi&nbsp;: 24&nbsp;heures (Impact),
+        48&nbsp;heures (Premium), 5&nbsp;jours ouvrés (Standard), 7&nbsp;jours ouvrés (Essentiel), à compter de
+        la validation du contenu par le client.
+      </p>
+
+      <h2>6. Contenu</h2>
+      <p>
+        Le client s'engage à fournir des informations exactes et licites. PDC VD se réserve le droit de
+        refuser ou de modifier tout contenu contraire à la loi, à l'ordre public ou à la ligne éditoriale du
+        site.
+      </p>
+
+      <h2>7. Annulation et remboursement</h2>
+      <p>
+        L'annulation est <strong>gratuite avant la publication</strong> de l'article&nbsp;: le montant réglé
+        est alors intégralement remboursé sur le moyen de paiement d'origine. Après publication, la prestation
+        est réputée exécutée et ne donne lieu à aucun remboursement, sauf manquement avéré à la présente
+        prestation.
+      </p>
+
+      <h2>8. Responsabilité</h2>
+      <p>
+        PDC VD s'engage à mettre en œuvre les moyens raisonnables pour assurer la disponibilité et la pérennité
+        des publications. La responsabilité de PDC VD est limitée au montant de la commande concernée, hors
+        dommages indirects.
+      </p>
+
+      <h2>9. Droit applicable</h2>
+      <p>
+        Les présentes CGV sont soumises au droit suisse. Tout litige relève des tribunaux du siège de
+        l'éditeur.
+      </p>
+    </article>
+  </main>
+</Base>
+
+<style>
+  .legal-page { max-width: 820px; margin: 24px auto 64px; }
+  .legal-page h1 { font-size: 30px; margin: 0 0 18px; }
+  .legal-page h2 { font-size: 19px; margin: 26px 0 10px; }
+  .legal-page p { font-size: 15px; line-height: 1.7; color: #333; margin: 0 0 12px; }
+  .legal-page a { color: var(--accent); font-weight: 600; }
+</style>

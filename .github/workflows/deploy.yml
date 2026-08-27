@@ -1,0 +1,36 @@
+name: Deploy pdc-vd.ch
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [wp-update]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build static site
+        run: npm run build
+
+      - name: SEO contract (bloquant)
+        run: |
+          python3 scripts/seo_contract.py data/audit_pdc-vd.json dist --posts data/wp/posts.json
+
+      - name: Deploy to Cloudflare Pages
+        run: npx wrangler pages deploy dist --project-name pdc-vd --branch main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

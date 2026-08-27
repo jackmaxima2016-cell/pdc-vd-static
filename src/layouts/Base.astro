@@ -1,0 +1,244 @@
+---
+// Layout de base — head SEO complet (title, description, canonical, og, JSON-LD)
+// Header magazine : bandeau date + marque + navigation rubriques sticky
+import { decodeEntities, getCategories } from '../lib/wp.mjs';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  jsonLd?: object[];
+  type?: 'website' | 'article';
+  relPrev?: string;
+  relNext?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  noindex = false,
+  jsonLd = [],
+  type = 'website',
+  relPrev,
+  relNext,
+} = Astro.props;
+
+// Préversion : NOINDEX=1 au build => toutes les pages en noindex
+const noindexAll = typeof process !== 'undefined' && process.env.NOINDEX === '1';
+
+const GA4_ID = (import.meta.env.PUBLIC_GA4_ID ?? '').trim();
+
+const site = String(Astro.site ?? 'https://pdc-vd.ch').replace(/\/$/, '');
+const pageUrl = canonical ?? site + '/';
+const ogType = type === 'article' ? 'article' : 'website';
+
+// Rubriques de la navigation : catégories les plus fournies
+const topCats = getCategories()
+  .filter((c) => c.count > 0)
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 9);
+
+const today = new Date().toLocaleDateString('fr-FR', {
+  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+});
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{decodeEntities(title)}</title>
+    {description && <meta name="description" content={decodeEntities(description)} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {noindexAll && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={pageUrl} />
+    {relPrev && <link rel="prev" href={relPrev} />}
+    {relNext && <link rel="next" href={relNext} />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="PDC VD" />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:title" content={decodeEntities(title)} />
+    {description && <meta property="og:description" content={decodeEntities(description)} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <link rel="sitemap" href={site + '/sitemap-index.xml'} />
+    {jsonLd.map((block) => <script type="application/ld+json" set:html={JSON.stringify(block)} />)}
+
+    {/* Google Analytics 4 — actif uniquement si PUBLIC_GA4_ID est défini au build */}
+    {
+      GA4_ID && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}></script>
+          <script is:inline set:html={`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('consent', 'default', {
+  ad_storage: 'denied', ad_user_data: 'denied',
+  ad_personalization: 'denied', analytics_storage: 'denied',
+});
+gtag('config', '${GA4_ID}', { anonymize_ip: true });`}></script>
+        </>
+      )
+    }
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-top">
+        <div class="container header-top-inner">
+          <span class="header-date">{today}</span>
+          <span class="header-tagline">L'information Suisse locale</span>
+        </div>
+      </div>
+      <div class="header-brand">
+        <div class="container header-brand-inner">
+          <a class="logo" href="/">PDC VD</a>
+        </div>
+      </div>
+    </header>
+    <nav class="header-nav" id="nav-menu" aria-label="Rubriques">
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Ouvrir le menu">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+      <div class="container nav-inner">
+        <a href="/">Accueil</a>
+        <div class="nav-drop">
+          <button class="nav-drop-btn" type="button" aria-expanded="false" aria-haspopup="true">
+            Rubriques <span class="nav-drop-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="nav-drop-menu" role="menu">
+            {topCats.map((c) => (
+              <a role="menuitem" href={`/#rubrique-${c.slug}`}>{decodeEntities(c.name)}</a>
+            ))}
+          </div>
+        </div>
+        <a href="/contact/">Contact</a>
+      </div>
+    </nav>
+    <main class="container">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <span class="logo">PDC VD</span>
+            <p>L'information Suisse locale : actualité, conseils et décryptages.</p>
+          </div>
+          <div class="footer-col">
+            <h3>Rubriques</h3>
+            {topCats.map((c) => (
+              <a href={`/#rubrique-${c.slug}`}>{decodeEntities(c.name)}</a>
+            ))}
+          </div>
+          <div class="footer-col">
+            <h3>Le site</h3>
+            <a href="/">Accueil</a>
+            <a href="/contact/">Contact</a>
+          </div>
+          <div class="footer-col">
+            <h3>Liens utiles</h3>
+            <a href="/plan-du-site/">Plan du site</a>
+            <a href="/mentions-legales/">Mentions légales</a>
+            <a href="/confidentialite/">Politique de confidentialité</a>
+            <a href="/cgv/">Conditions générales de vente</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© {new Date().getFullYear()} PDC VD — L'information Suisse locale</p>
+        </div>
+      </div>
+    </footer>
+    {
+      GA4_ID && (
+        <>
+          <div id="consent-banner" role="dialog" aria-label="Consentement aux cookies de mesure" hidden>
+            <p class="consent-text">
+              Nous utilisons des cookies de mesure d'audience (Google Analytics&nbsp;4) pour améliorer ce site.
+              Vous pouvez les accepter ou les refuser — <a href="/confidentialite/">en savoir plus</a>.
+            </p>
+            <div class="consent-actions">
+              <button type="button" id="consent-accept">Accepter</button>
+              <button type="button" id="consent-refuse" class="consent-refuse">Refuser</button>
+            </div>
+          </div>
+          <script is:inline>
+            // Consentement cookies (GA4) — mémorisé, demande une seule fois par visiteur
+            (function () {
+              var KEY = 'pdcvd_consent_v1';
+              var banner = document.getElementById('consent-banner');
+              if (!banner) return;
+              var update = function (v) {
+                if (window.gtag) {
+                  gtag('consent', 'update', {
+                    ad_storage: v, ad_user_data: v, ad_personalization: v, analytics_storage: v,
+                  });
+                }
+              };
+              var st = null;
+              try { st = localStorage.getItem(KEY); } catch (e) {}
+              if (st === 'granted') { update('granted'); return; }
+              if (st === 'denied') { update('denied'); return; }
+              banner.hidden = false;
+              document.getElementById('consent-accept').addEventListener('click', function () {
+                try { localStorage.setItem(KEY, 'granted'); } catch (e) {}
+                update('granted'); banner.hidden = true;
+              });
+              document.getElementById('consent-refuse').addEventListener('click', function () {
+                try { localStorage.setItem(KEY, 'denied'); } catch (e) {}
+                update('denied'); banner.hidden = true;
+              });
+            })();
+          </script>
+        </>
+      )
+    }
+    <script>
+      // Menu burger mobile : ouverture/fermeture + accessibilité
+      const navToggle = document.querySelector('.nav-toggle');
+      const navMenu = document.getElementById('nav-menu');
+      if (navToggle && navMenu) {
+        const close = () => {
+          navMenu.classList.remove('is-open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        };
+        navToggle.addEventListener('click', () => {
+          const open = navMenu.classList.toggle('is-open');
+          navToggle.setAttribute('aria-expanded', String(open));
+        });
+        navMenu.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') close();
+        });
+      }
+      // Menu déroulant « Rubriques »
+      const navDrop = document.querySelector('.nav-drop');
+      const navDropBtn = document.querySelector('.nav-drop-btn');
+      if (navDrop && navDropBtn) {
+        const setDrop = (open) => {
+          navDrop.classList.toggle('is-open', open);
+          navDropBtn.setAttribute('aria-expanded', String(open));
+        };
+        navDropBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setDrop(!navDrop.classList.contains('is-open'));
+        });
+        document.addEventListener('click', (e) => {
+          if (!navDrop.contains(e.target)) setDrop(false);
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') setDrop(false);
+        });
+      }
+    </script>
+  </body>
+</html>

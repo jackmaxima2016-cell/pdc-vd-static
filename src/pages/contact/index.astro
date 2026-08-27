@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import ContactForm from '../../components/ContactForm.astro';
+
+const TITLE = 'Contact - PDC VD';
+const DESC = "Contactez PDC VD : presse, partenariats et publications.";
+const CANONICAL = 'https://pdc-vd.ch/contact/';
+---
+
+<Base title={TITLE} description={DESC} canonical={CANONICAL}>
+  <header class="entry-header">
+    <h1 class="entry-title">Contact</h1>
+  </header>
+  <section class="contact-grid" aria-label="Contact">
+    <div class="col-form">
+      <ContactForm />
+    </div>
+    <div class="col-details">
+      <p class="contact-kicker">Nous contacter</p>
+      <h2 class="contact-title">Écrivez-nous</h2>
+      <p>
+        Une question, une suggestion, une demande de partenariat ou de publication
+        sponsorisée&nbsp;? Laissez-nous un message, nous revenons vers vous sous
+        24–48&nbsp;h.
+      </p>
+      <h3 class="roi-title">Pourquoi publier sur PDC VD&nbsp;?</h3>
+      <ul class="roi-list">
+        <li><strong>🔍 SEO — un backlink qui compte.</strong> Votre lien depuis un média indexé (dofollow) renforce l'autorité de votre domaine.</li>
+        <li><strong>🤖 GEO — visible par les IA.</strong> ChatGPT, Perplexity et Gemini citent les médias : votre contenu devient une source.</li>
+        <li><strong>♾️ Durable.</strong> Votre article reste en ligne et indexé pendant la durée choisie.</li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style is:global>
+  .contact-grid { display: grid; grid-template-columns: 1fr; gap: 36px; max-width: var(--maxw); margin: 0 auto 44px; }
+  @media (min-width: 900px) { .contact-grid { grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: start; } }
+  .contact-kicker { text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--accent); margin: 0 0 8px; }
+  .contact-title { font-size: 26px; margin: 0 0 14px; }
+  .col-details p { font-size: 15px; line-height: 1.65; color: #222; }
+  .roi-title { font-size: 15px; font-weight: 800; margin: 22px 0 10px; text-transform: uppercase; letter-spacing: .05em; }
+  .roi-list { list-style: none; margin: 0; padding: 0; }
+  .roi-list li { font-size: 13.5px; line-height: 1.6; padding: 10px 0; border-top: 1px solid #c8c8c8; color: #262626; }
+  .roi-list li strong { display: block; margin-bottom: 2px; }
+</style>

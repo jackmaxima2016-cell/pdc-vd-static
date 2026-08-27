@@ -1,0 +1,95 @@
+---
+// Sidebar latérale droite — reproduit les widgets du thème colormag WP d'origine :
+// Sponsor (text-4), Partenaires (text-6), Catégories (categories-2), Articles récents (recent-posts-2).
+// ⚠️ « Archives » (archives-2) non reproduit : le site Astro n'a pas de pages d'archive mensuelles.
+import { getCategories, getPosts, decodeEntities } from '../lib/wp.mjs';
+
+const categories = getCategories().filter((c) => c.count > 0);
+const recent = [...getPosts()]
+  .sort((a, b) => new Date(b.date) - new Date(a.date))
+  .slice(0, 5);
+
+// Liens exacts des widgets WP (textes, cibles et attributs d'origine)
+const sponsorLinks = [
+  { label: 'fiduciaire geneve', url: 'https://fiducompta.ch/', title: undefined, blank: false },
+  { label: 'comment gagner de l argent', url: 'https://prim.net/10-techniques-pour-gagner-de-largent-facilement-sur-internet/', title: 'comment gagner de l argent facilement', blank: true },
+  { label: 'gagner de l argent', url: 'https://www.worldnet.fr/gagner-de-largent-sur-internet-facilement-voici-les-meilleurs-methodes/', title: "Gagner de l'argent", blank: true },
+  { label: 'comment devenir riche', url: 'https://www.worldnet.fr/devenir-riche-rapidement-les-5-moyens-les-plus-rapides-selon-les-experts/', title: 'comment devenir riche', blank: true },
+  { label: 'Support ordinateur portable', url: 'https://prim.net/support-ordinateur-portable-soignez-votre-dos-maintenant-ou-vous-souffrirez-toute-votre-vie/', title: 'Support ordinateur portable', blank: true },
+  { label: 'Systeme IO', url: 'https://prim.net/systeme-io-loutil-indispensable-pour-gagner-de-largent-sur-internet-et-gerer-votre-business-sur-internet/', title: 'Systeme io', blank: true },
+  { label: 'formation google my business', url: 'https://prim.net/referencement-google-my-business-attirer-de-nouveau-clients-dans-votre-ville-grace-a-cette-formation-dexpert-reconnu/', title: undefined, blank: false },
+  { label: 'Google my business', url: 'https://youtu.be/SznGyMiDFyA', title: 'Google my business', blank: false },
+  { label: 'Electricien urgence', url: 'https://mobilitepourtous.ch', title: undefined, blank: false },
+  { label: 'CBD Suisse', url: 'https://www.swisscarecbd.ch/', title: undefined, blank: false },
+];
+
+const partenaireLinks = [
+  { label: 'Electricien geneve', url: 'http://sos-electricien-geneve.ch/', title: undefined, blank: false },
+  { label: 'astuces xiaomi', url: 'https://youtube.com/c/ELPROFESSOR74', title: undefined, blank: false },
+  { label: 'xiaomi', url: 'https://youtube.com/c/ELPROFESSOR74', title: undefined, blank: false },
+  { label: 'localiser mon iphone', url: 'https://youtu.be/HM5emALHfRE', title: undefined, blank: false },
+];
+---
+
+<aside class="sidebar" aria-label="Colonne latérale">
+  <div class="side-block">
+    <h2 class="side-title">Sponsor</h2>
+    <ul class="side-links">
+      {sponsorLinks.map((l) => (
+        <li>
+          <a href={l.url} title={l.title} target={l.blank ? '_blank' : undefined} rel={l.blank ? 'noopener' : undefined}>{l.label}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="side-block">
+    <h2 class="side-title">Partenaires</h2>
+    <ul class="side-links">
+      {partenaireLinks.map((l) => (
+        <li>
+          <a href={l.url} title={l.title} target={l.blank ? '_blank' : undefined} rel={l.blank ? 'noopener' : undefined}>{l.label}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="side-block">
+    <h2 class="side-title">Catégories</h2>
+    <ul class="side-links">
+      {categories.map((c) => (
+        <li><a href={`/#rubrique-${c.slug}`}>{c.name}</a></li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="side-block">
+    <h2 class="side-title">Articles récents</h2>
+    <ul class="side-recent">
+      {recent.map((p) => (
+        <li>
+          <a href={`/${p.slug}/`}>{decodeEntities(p.title?.rendered ?? '')}</a>
+          <time datetime={p.date}>{new Date(p.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
+        </li>
+      ))}
+    </ul>
+  </div>
+</aside>
+
+<style is:global>
+  .layout-ws { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 36px; align-items: start; }
+  .sidebar { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 26px; }
+  .side-block { background: #f7f7f7; border: 1px solid #e2e2e2; border-radius: 8px; padding: 18px 20px; }
+  .side-title { font-size: 15px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; color: var(--accent, #207daf); margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--accent, #207daf); }
+  .side-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .side-links a { color: #333; text-decoration: none; font-size: 14.5px; line-height: 1.35; }
+  .side-links a:hover { color: var(--accent, #207daf); text-decoration: underline; }
+  .side-recent { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .side-recent a { color: #222; text-decoration: none; font-size: 14.5px; font-weight: 600; line-height: 1.35; }
+  .side-recent a:hover { color: var(--accent, #207daf); text-decoration: underline; }
+  .side-recent time { display: block; font-size: 12.5px; color: #777; margin-top: 2px; }
+  @media (max-width: 980px) {
+    .layout-ws { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+  }
+</style>

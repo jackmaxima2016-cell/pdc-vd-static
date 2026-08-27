@@ -1,0 +1,80 @@
+---
+// Politique de confidentialité — page standard (indexable)
+import Base from '../../layouts/Base.astro';
+
+const TITLE = 'Politique de confidentialité — PDC VD';
+const DESC = "Politique de confidentialité de PDC VD : données collectées, finalités, cookies, paiement sécurisé et vos droits.";
+const CANONICAL = 'https://pdc-vd.ch/confidentialite/';
+---
+<Base title={TITLE} description={DESC} canonical={CANONICAL}>
+  <main class="container">
+    <article class="legal-page" aria-labelledby="titre">
+      <h1 id="titre">Politique de confidentialité</h1>
+
+      <h2>1. Données collectées</h2>
+      <p>
+        Lors d'une commande de publication sponsorisée, nous collectons les informations que vous nous
+        transmettez via le formulaire&nbsp;: nom, adresse e-mail, URL de votre site, sujet de la publication,
+        options choisies et message éventuel. Ces données sont nécessaires à la préparation et à la livraison
+        de votre commande.
+      </p>
+
+      <h2>2. Finalités du traitement</h2>
+      <p>
+        Vos données sont utilisées exclusivement pour&nbsp;: traiter et confirmer votre commande, vous
+        contacter pour valider le calendrier et l'angle éditorial, vous adresser la facture et le lien de
+        publication, et répondre à vos demandes. Elles ne sont jamais revendues ni transmises à des tiers à
+        des fins commerciales.
+      </p>
+
+      <h2>3. Paiement sécurisé</h2>
+      <p>
+        Les paiements sont traités par Stripe, prestataire de paiement certifié PCI-DSS. Vos données bancaires
+        (numéro de carte, cryptogramme) sont saisies directement sur la plateforme sécurisée de Stripe et ne
+        transitent jamais par nos serveurs.
+      </p>
+
+      <h2>4. Protection anti-robot</h2>
+      <p>
+        Le formulaire de commande utilise Cloudflare Turnstile, un service de vérification anti-robot qui
+        s'appuie sur des données techniques de votre navigateur (adresse IP, empreinte navigateur). Ces
+        données sont traitées par Cloudflare conformément à sa propre politique de confidentialité.
+      </p>
+
+      <h2>5. Cookies et mesure d'audience</h2>
+      <p>
+        Le site utilise le stockage local de votre navigateur (localStorage) pour mémoriser votre panier et le
+        compte à rebours promotionnel pendant votre visite.
+      </p>
+      <p>
+        Lorsque vous acceptez la bannière de consentement, nous utilisons <strong>Google Analytics&nbsp;4
+        (GA4)</strong> pour mesurer l'audience et améliorer le site. GA4 est configuré avec anonymisation des
+        adresses IP et aucun cookie publicitaire n'est déposé. Vous pouvez refuser la mesure d'audience sans
+        conséquence&nbsp;: votre choix est mémorisé localement et reste modifiable en effaçant les données du
+        navigateur. Aucun traceur publicitaire ou de profilage n'est utilisé.
+      </p>
+
+      <h2>6. Durée de conservation</h2>
+      <p>
+        Les données de commande sont conservées le temps nécessaire au traitement de la commande, à la
+        facturation et au respect des obligations légales (comptabilité), puis supprimées ou anonymisées.
+      </p>
+
+      <h2>7. Vos droits</h2>
+      <p>
+        Conformément à la législation applicable sur la protection des données, vous disposez d'un droit
+        d'accès, de rectification, de suppression et d'opposition sur vos données personnelles. Pour
+        l'exercer, contactez-nous via la page <a href="/contact/">Contact</a> en précisant l'objet de votre
+        demande.
+      </p>
+    </article>
+  </main>
+</Base>
+
+<style>
+  .legal-page { max-width: 820px; margin: 24px auto 64px; }
+  .legal-page h1 { font-size: 30px; margin: 0 0 18px; }
+  .legal-page h2 { font-size: 19px; margin: 26px 0 10px; }
+  .legal-page p { font-size: 15px; line-height: 1.7; color: #333; margin: 0 0 12px; }
+  .legal-page a { color: var(--accent); font-weight: 600; }
+</style>

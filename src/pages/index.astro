@@ -1,0 +1,135 @@
+---
+// Accueil — page magazine : hero + à la une + rubriques + fil d'actualités
+// Le H1 et le <title> restent identiques à l'audit (contrat SEO).
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { getPosts, getPages, PAGE_SIZE, getCategories, getImageMeta, getPostCategories, getPostAuthor, getReadingTime, decodeEntities } from '../lib/wp.mjs';
+
+const posts = getPosts();
+const totalPages = Math.ceil(posts.length / PAGE_SIZE);
+const site = String(Astro.site ?? 'https://pdc-vd.ch').replace(/\/$/, '');
+
+const TITLE = "PDC VD - L'information Suisse locale.";
+const DESC = "PDC VD, l'information Suisse locale : finance, santé, entreprises et services à Genève.";
+
+// ---- Composition éditoriale ----
+const [hero, ...rest] = posts;
+const edito = rest.slice(0, 5);                 // « À la une »
+const used = new Set([hero.slug, ...edito.map((p) => p.slug)]);
+
+// Rubriques : catégories les plus fournies (ordre du site WordPress)
+const rubriques = getCategories()
+  .filter((c) => c.count > 0)
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 8)
+  .map((c) => {
+    const list = posts.filter((p) => !used.has(p.slug) && getPostCategories(p).some((pc) => pc.id === c.id)).slice(0, 3);
+    list.forEach((p) => used.add(p.slug));
+    return { slug: c.slug, name: decodeEntities(c.name), count: c.count, posts: list };
+  })
+  .filter((r) => r.posts.length > 0);
+
+const feed = posts.filter((p) => !used.has(p.slug)); // fil complet (garantit le contrat)
+
+const heroImg = getImageMeta(hero, 'large');
+const heroCat = getPostCategories(hero)[0];
+const heroAuthor = getPostAuthor(hero);
+const heroExcerpt = decodeEntities((hero.excerpt?.rendered ?? '').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim().replace(/…$/, '');
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'PDC VD',
+    url: site + '/',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: site + '/?s={search_term_string}' },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+];
+---
+
+<Base title={TITLE} description={DESC} canonical={site + '/'} jsonLd={jsonLd} relNext="/page/2/">
+  <h1 class="sr-only">PDC VD</h1>
+
+  <!-- ARTICLE PRINCIPAL -->
+  <section class="hero" aria-label="Article principal">
+    <div class="hero-grid">
+      <div class="hero-img-wrap">
+        <a href={`/${hero.slug}/`}>
+          {heroImg.src && (
+            <img
+              class="hero-img"
+              src={heroImg.src}
+              alt={heroImg.alt || decodeEntities(hero.title?.rendered ?? '')}
+              width={heroImg.width ?? undefined}
+              height={heroImg.height ?? undefined}
+              fetchpriority="high"
+              decoding="async"
+            />
+          )}
+        </a>
+      </div>
+      <div class="hero-body">
+        <p class="hero-label">À la une</p>
+        {heroCat && <span class="badge">{heroCat.name}</span>}
+        <h2 class="hero-title"><a href={`/${hero.slug}/`}>{decodeEntities(hero.title?.rendered ?? '')}</a></h2>
+        {heroExcerpt && <p class="hero-excerpt">{heroExcerpt}</p>}
+        <div class="meta">
+          <time datetime={hero.date}>{new Date(hero.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
+          <span class="sep">·</span>
+          <span>par {heroAuthor}</span>
+          <span class="sep">·</span>
+          <span>{getReadingTime(hero)} min de lecture</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- À LA UNE + FIL COMPLET avec sidebar droite -->
+  <div class="layout-ws">
+  <div class="layout-main">
+  <!-- À LA UNE -->
+  <section class="section-block" aria-label="À la une">
+    <div class="section-head">
+      <h2 class="section-title">À la une</h2>
+    </div>
+    <div class="edito-grid">
+      {edito.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+
+  <!-- RUBRIQUES PAR CATÉGORIE -->
+  {rubriques.map((r) => (
+    <section class="section-block" id={`rubrique-${r.slug}`} aria-label={r.name}>
+      <div class="section-head">
+        <h2 class="section-title">{r.name}</h2>
+        <span class="section-link">{r.count} articles</span>
+      </div>
+      <div class="rubric-grid">
+        {r.posts.map((post) => <PostCard post={post} />)}
+      </div>
+    </section>
+  ))}
+
+  <!-- FIL COMPLET -->
+  <section class="section-block" aria-label="Toutes les actualités">
+    <div class="section-head">
+      <h2 class="section-title">Toutes les actualités</h2>
+    </div>
+    <div class="feed">
+      {feed.map((post) => <PostCard post={post} variant="line" />)}
+    </div>
+  </section>
+
+  <nav class="pagination" aria-label="Pagination">
+    <span class="page-info">Page 1 sur {totalPages}</span>
+    <a rel="next" href="/page/2/">Page suivante →</a>
+  </nav>
+  </div><!-- /layout-main -->
+  <Sidebar />
+  </div><!-- /layout-ws -->
+</Base>

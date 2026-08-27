@@ -1,0 +1,18 @@
+{
+  "name": "pdc-vd-static",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Site statique Astro généré depuis WordPress — https://pdc-vd.ch — migration blog .ch",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "fetch:wp": "node scripts/fetch-wp.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.123.0"
+  }
+}

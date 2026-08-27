@@ -1,0 +1,55 @@
+---
+// Carte d'article média — variantes : 'grid' (défaut) | 'line' (fil)
+import { decodeEntities, getImageMeta, getPostCategories, getReadingTime } from '../lib/wp.mjs';
+
+interface Props {
+  post: any;
+  variant?: 'grid' | 'line';
+}
+const { post, variant = 'grid' } = Astro.props;
+const title = decodeEntities(post.title?.rendered ?? '');
+const img = getImageMeta(post, 'medium_large');
+const cats = getPostCategories(post);
+const cat = cats[0];
+const href = `/${post.slug}/`;
+const dateLong = new Date(post.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+const dateShort = new Date(post.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+const excerpt = decodeEntities((post.excerpt?.rendered ?? '').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim().replace(/…$/, '');
+---
+
+{
+  variant === 'line' ? (
+    <article class="feed-item">
+      <time class="feed-date" datetime={post.date}>{dateShort}</time>
+      <h3 class="feed-title"><a href={href}>{title}</a></h3>
+    </article>
+  ) : (
+    <article class="card">
+      {img.src && (
+        <div class="card-media">
+          <a href={href} tabindex="-1" aria-hidden="true">
+            <img
+              class="card-img"
+              src={img.src}
+              alt={img.alt || title}
+              width={img.width ?? undefined}
+              height={img.height ?? undefined}
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+        </div>
+      )}
+      <div class="card-body">
+        {cat && <span class="badge">{cat.name}</span>}
+        <h3 class="card-title"><a href={href}>{title}</a></h3>
+        {variant === 'grid' && excerpt && <p class="card-excerpt">{excerpt}</p>}
+        <div class="meta">
+          <time datetime={post.date}>{dateLong}</time>
+          <span class="sep">·</span>
+          <span>{getReadingTime(post)} min de lecture</span>
+        </div>
+      </div>
+    </article>
+  )
+}

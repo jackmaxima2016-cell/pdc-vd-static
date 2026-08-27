@@ -1,0 +1,98 @@
+---
+// Formulaire de contact simple — nom, email, message (Turnstile anti-bot)
+// Envoi : POST /api/contact (Pages Function) → vérif Turnstile → relais FormSubmit
+const TURNSTILE_SITE_KEY = '0x4AAAAAAETjkjCYOZ1SXxyR';
+---
+
+<section class="contact-form-wrap">
+  <form id="contact-form" class="simple-form" action="/api/contact" method="POST" novalidate>
+    <input type="hidden" name="_subject" value="Nouveau message depuis le site" />
+    <input type="text" name="_honey" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <div class="form-field">
+      <label for="f-nom">Nom complet *</label>
+      <input type="text" id="f-nom" name="nom" required autocomplete="name" placeholder="Prénom et nom" />
+    </div>
+    <div class="form-field">
+      <label for="f-email">E-mail *</label>
+      <input type="email" id="f-email" name="email" required autocomplete="email" placeholder="vous@exemple.ch" />
+    </div>
+    <div class="form-field">
+      <label for="f-message">Message *</label>
+      <textarea id="f-message" name="message" required rows="6" placeholder="Votre message…"></textarea>
+    </div>
+    <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+    <p class="form-status" role="status" aria-live="polite"></p>
+    <div class="form-footer">
+      <button type="submit" class="btn-next">Envoyer le message →</button>
+    </div>
+  </form>
+  <div class="form-success" hidden>
+    <h3>Message envoyé ✅</h3>
+    <p>Merci ! Votre message est bien reçu. Nous revenons vers vous sous 24–48&nbsp;h.</p>
+    <p class="form-success-back"><a href="/">← Retour à l’accueil</a></p>
+  </div>
+</section>
+
+<style>
+  .contact-form-wrap { max-width: 720px; margin: 0 auto; }
+  .simple-form .form-field { margin-bottom: 16px; }
+  .simple-form label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #111; }
+  .simple-form input, .simple-form textarea {
+    width: 100%; padding: 12px 13px; font: inherit; font-size: 15px;
+    border: 1.5px solid #767676; border-radius: 4px; background: #fff; color: #111;
+  }
+  .simple-form input:focus, .simple-form textarea:focus {
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(160,16,48,0.15);
+  }
+  .hp-field { position: absolute; left: -9999px; opacity: 0; height: 0; width: 0; }
+  .cf-turnstile { margin: 14px 0 4px; }
+  .form-status { font-size: 14px; margin: 12px 0 0; min-height: 20px; font-weight: 600; }
+  .form-status.is-error { color: #b00020; }
+  .form-status.is-ok { color: #0a6b1d; }
+  .form-footer { margin-top: 12px; }
+  .btn-next {
+    padding: 12px 26px; font: inherit; font-size: 15px; font-weight: 700;
+    color: #fff; background: #111; border: none; border-radius: 4px; cursor: pointer;
+  }
+  .btn-next:hover { background: var(--accent); }
+  .btn-next[disabled] { opacity: 0.6; cursor: wait; }
+  .form-success h3 { font-size: 22px; margin: 0 0 10px; }
+  .form-success p { font-size: 15px; line-height: 1.6; }
+  .form-success-back { margin-top: 16px; }
+</style>
+
+<script is:inline>
+  (function () {
+    var form = document.getElementById('contact-form');
+    if (!form) return;
+    var status = form.querySelector('.form-status');
+    var submit = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      status.className = 'form-status';
+      status.textContent = '';
+      submit.disabled = true;
+      submit.textContent = 'Envoi…';
+      try {
+        var res = await fetch('/api/contact', { method: 'POST', body: new FormData(form) });
+        var data = await res.json().catch(function () { return {}; });
+        if (data.success === 'true') {
+          status.className = 'form-status is-ok';
+          status.textContent = 'Message envoyé avec succès.';
+          form.querySelector('.form-success').hidden = false;
+          form.hidden = true;
+        } else {
+          status.className = 'form-status is-error';
+          status.textContent = data.message || 'Erreur d'envoi, réessayez.';
+        }
+      } catch (err) {
+        status.className = 'form-status is-error';
+        status.textContent = 'Erreur réseau, réessayez.';
+      } finally {
+        submit.disabled = false;
+        submit.textContent = 'Envoyer le message →';
+      }
+    });
+  })();
+</script>

@@ -1,0 +1,60 @@
+---
+// Pages de pagination /page/N/ (N = 2..total) — grille de cartes
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { getPosts, getPages, PAGE_SIZE } from '../../lib/wp.mjs';
+
+export async function getStaticPaths() {
+  const posts = getPosts();
+  const totalPages = Math.ceil(posts.length / PAGE_SIZE);
+  return Array.from({ length: totalPages - 1 }, (_, i) => {
+    const n = i + 2;
+    return {
+      params: { page: String(n) },
+      props: { pageNum: n, totalPages, posts: posts.slice((n - 1) * PAGE_SIZE, n * PAGE_SIZE) },
+    };
+  });
+}
+
+const { pageNum, totalPages, posts: pagePosts } = Astro.props;
+const site = String(Astro.site ?? 'https://pdc-vd.ch').replace(/\/$/, '');
+const url = `${site}/page/${pageNum}/`;
+
+const TITLE = `PDC VD - Page ${pageNum} sur ${totalPages} - L'information Suisse locale.`;
+const DESC = "PDC VD, l'information Suisse locale : finance, santé, entreprises et services à Genève.";
+const PREV = pageNum > 2 ? `/page/${pageNum - 1}/` : '/';
+const NEXT = pageNum < totalPages ? `/page/${pageNum + 1}/` : null;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'PDC VD',
+    url: site + '/',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: site + '/?s={search_term_string}' },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+];
+---
+
+<Base title={TITLE} description={DESC} canonical={url} jsonLd={jsonLd} relPrev={PREV} relNext={NEXT ?? undefined}>
+  <h1 class="page-title">PDC VD</h1>
+  <div class="layout-ws">
+  <div class="layout-main">
+  <div class="post-grid">
+    {pagePosts.map((post) => <PostCard post={post} />)}
+  </div>
+
+  <nav class="pagination" aria-label="Pagination">
+    <a rel="prev" href={PREV}>← Page précédente</a>
+    <span class="page-info">Page {pageNum} sur {totalPages}</span>
+    {NEXT && <a rel="next" href={NEXT}>Page suivante →</a>}
+  </nav>
+  </div><!-- /layout-main -->
+  <Sidebar />
+  </div><!-- /layout-ws -->
+</Base>
