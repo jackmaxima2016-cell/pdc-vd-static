@@ -5,7 +5,7 @@
   "description": "Site statique Astro généré depuis WordPress — https://pdc-vd.ch — migration blog .ch",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/optimize-html.mjs",
     "preview": "astro preview",
     "fetch:wp": "node scripts/fetch-wp.mjs"
   },
@@ -13,6 +13,7 @@
     "astro": "^5.0.0"
   },
   "devDependencies": {
+    "image-size": "^2.0.2",
     "wrangler": "^4.123.0"
   }
 }

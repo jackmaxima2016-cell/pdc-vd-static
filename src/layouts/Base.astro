@@ -68,6 +68,9 @@ const today = new Date().toLocaleDateString('fr-FR', {
     <meta property="og:title" content={decodeEntities(title)} />
     {description && <meta property="og:description" content={decodeEntities(description)} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={decodeEntities(title)} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
 
     <link rel="sitemap" href={site + '/sitemap-index.xml'} />
     {jsonLd.map((block) => <script type="application/ld+json" set:html={JSON.stringify(block)} />)}

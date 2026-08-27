@@ -13,10 +13,12 @@ export const GET: APIRoute = ({ site }) => {
   for (const p of pages) urls.push(`/${p.slug}/`);
   for (const p of posts) urls.push(`/${p.slug}/`);
 
+  const bySlug = new Map(posts.map((p) => [p.slug, p.date?.slice(0, 10)]));
   const lastmod = posts[0]?.date?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
+  const modOf = (u) => bySlug.get(u.replace(/^\//, '').replace(/\/$/, '')) ?? lastmod;
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url><loc>${base}${u}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}
+${urls.map((u) => `  <url><loc>${base}${u}</loc><lastmod>${modOf(u)}</lastmod></url>`).join('\n')}
 </urlset>
 `;
   return new Response(xml, { headers: { 'Content-Type': 'application/xml' } });
