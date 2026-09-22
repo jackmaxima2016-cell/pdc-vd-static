@@ -23,7 +23,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import sharp from 'sharp';
+
+/* sharp peut manquer (dépendance transitive, ou install CI différente) : dans ce cas
+   on n'optimise rien mais le build ne doit JAMAIS échouer à cause de ce script. */
+let sharp = null;
+try {
+  sharp = (await import('sharp')).default;
+} catch {
+  console.warn('optimize-images: sharp indisponible — étape ignorée (build non bloqué)');
+  process.exit(0);
+}
 
 const argv = process.argv.slice(2);
 const arg = (name, def) => {
